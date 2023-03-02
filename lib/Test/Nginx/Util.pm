@@ -2045,10 +2045,15 @@ start_nginx:
                         $cmd = qq!LD_PRELOAD="$ENV{LD_PRELOAD}" $cmd!;
                     }
 
-                    if (defined $ENV{LD_LIBRARY_PATH}) {
-                        $cmd = qq!LD_LIBRARY_PATH="$ENV{LD_LIBRARY_PATH}" $cmd!;
+                    # FIXED: in case that `stap` and `nginx` will use different LD_LIBRARY_PATH
+                    if (defined $ENV{NGINX_LD_LIBRARY_PATH}) {
+                            $cmd = qq!LD_LIBRARY_PATH="$ENV{NGINX_LD_LIBRARY_PATH}" $cmd!;
+                    } else {
+                        if (defined $ENV{LD_LIBRARY_PATH}) {
+                            $cmd = qq!LD_LIBRARY_PATH="$ENV{LD_LIBRARY_PATH}" $cmd!;
+                        }
                     }
-
+                    
                     $cmd = "stap-nginx -c '$cmd' -o $outfile $stap_fname";
 
                     #warn "CMD: $cmd\n";
